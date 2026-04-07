@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COFRAP - Pulsar Interface</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #000;
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+        }
+
+        /* --- Fond Spatial Animé --- */
+        .space-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            z-index: -2;
+        }
+
+        /* --- La Planète Flottante (CSS) --- */
+        .planet {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: url('https://raw.githubusercontent.com/manishshrivas/planet-css/master/planet.png'); /* Texture de secours */
+            background: radial-gradient(circle at 30% 30%, #5cabff, #000);
+            border-radius: 50%;
+            top: 10%;
+            right: 10%;
+            box-shadow: inset -20px -20px 50px #000, 0 0 50px rgba(92, 171, 255, 0.4);
+            animation: float 10s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* --- Carte Holographique --- */
+        .container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 30px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 123, 255, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+            background: linear-gradient(to bottom, #fff, #5cabff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p { color: #8a99af; font-size: 0.9rem; margin-bottom: 30px; }
+
+        /* --- Saisie de l'ID --- */
+        input {
+            width: 90%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #34495e;
+            border-radius: 10px;
+            color: #5cabff;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            transition: 0.3s;
+            margin-bottom: 20px;
+        }
+
+        input:focus {
+            border-color: #5cabff;
+            box-shadow: 0 0 15px rgba(92, 171, 255, 0.4);
+        }
+
+        /* --- Bouton Pulsar --- */
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #007bff;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+        }
+
+        button:hover {
+            background: #0056b3;
+            transform: scale(1.02);
+        }
+
+        /* --- Zone QR Code --- */
+        #qr-container {
+            margin-top: 30px;
+            display: none;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #qr-image {
+            background: #fff;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(92, 171, 255, 0.8);
+            width: 200px;
+        }
+
+        .error { color: #ff4757; margin-top: 15px; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+<div class="space-bg"></div>
+<div class="planet"></div>
+
+<div class="container">
+    <h1>COFRAP</h1>
+    <p>Système de génération d'identifiants automatique.</p>
+    
+    <input type="text" id="usernameInput" placeholder="Saisissez votre nom d'utilisateur">
+    <button id="btnGenerate">Générer mon compte</button>
+
+    <div id="error-message" class="error"></div>
+
+    <div id="qr-container">
+        <h3>Votre accès généré :</h3>
+        <img id="qr-image" src="" alt="QR Code">
+        <p style="margin-top: 15px; color: #5cabff;">Scannez le code pour récupérer vos identifiants.</p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('btnGenerate').addEventListener('click', async () => {
+        const username = document.getElementById('usernameInput').value;
+        const errorDiv = document.getElementById('error-message');
+        const qrContainer = document.getElementById('qr-container');
+        const qrImage = document.getElementById('qr-image');
+
+        if (!username) {
+            errorDiv.innerText = "Le nom d'utilisateur est obligatoire.";
+            return;
+        }
+        errorDiv.innerText = "";
+
+        try {
+            // Remplace par l'URL de ton Codespace ou de ta Gateway OpenFaaS
+            const response = await fetch('http://localhost:8080/function/generate-password', {
+                method: 'POST',
+                body: JSON.stringify({ username: username }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+
+            if (data.status === "success") {
+                qrImage.src = "data:image/png;base64," + data.qr_code;
+                qrContainer.style.display = "block";
+            } else {
+                errorDiv.innerText = "Erreur système : " + data.message;
+            }
+        } catch (err) {
+            errorDiv.innerText = "Liaison avec le serveur COFRAP impossible.";
+        }
+    });
+</script>
+
+</body>
+</html>
