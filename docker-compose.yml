@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+
+  # --- Base de données PostgreSQL ---
+  db:
+    image: postgres:15-alpine
+    container_name: cofrap_db
+    environment:
+      POSTGRES_DB: cofrap
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - cofrap_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cofrap"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- Backend Python (générateur de mot de passe) ---
+  backend:
+    build:
+      context: ./Ali-generate-password
+      dockerfile: Dockerfile
+    container_name: cofrap_backend
+    environment:
+      POSTGRES_URL: "dbname=cofrap user=postgres password=password host=db port=5432"
+      FERNET_KEY: "QJ1pAcr4N9EqFg4uZzJCte4YbE5Z-Cez-DkUZwosLBo="
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - cofrap_network
+    restart: on-failure
+
+  # --- Frontend Nginx (interface HTML) ---
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cofrap_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - cofrap_network
+
+networks:
+  cofrap_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
