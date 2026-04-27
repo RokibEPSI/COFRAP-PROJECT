@@ -3,195 +3,355 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COFRAP - Pulsar Interface</title>
+    <title>COFRAP - Pulsar Secure Access</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --primary: #5cabff;
+            --primary-hover: #3b82f6;
+            --bg-dark: #090a0f;
+            --card-bg: rgba(30, 41, 59, 0.7); /* Transparence pour voir le fond */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --error: #ef4444;
+        }
 
         body {
             margin: 0;
             padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background: #000;
-            color: #fff;
-            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
             overflow: hidden;
         }
 
-        /* --- Fond Spatial Animé --- */
-        .space-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
-            z-index: -2;
-        }
-
-        /* --- La Planète Flottante (CSS) --- */
+        /* --- ÉLÉMENTS GRAPHIQUES (LUNE / PLANÈTE) --- */
         .planet {
             position: absolute;
-            width: 300px;
-            height: 300px;
-            background: url('https://raw.githubusercontent.com/manishshrivas/planet-css/master/planet.png'); /* Texture de secours */
+            width: 350px;
+            height: 350px;
             background: radial-gradient(circle at 30% 30%, #5cabff, #000);
             border-radius: 50%;
+            z-index: -1;
             top: 10%;
             right: 10%;
-            box-shadow: inset -20px -20px 50px #000, 0 0 50px rgba(92, 171, 255, 0.4);
-            animation: float 10s ease-in-out infinite;
-            z-index: -1;
+            box-shadow: -20px -20px 50px rgba(92, 171, 255, 0.2), inset -10px -10px 50px #000;
+            animation: float 6s ease-in-out infinite;
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
         }
 
-        /* --- Carte Holographique --- */
-        .container {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
+        /* --- CONTENEUR PRINCIPAL --- */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px); /* Effet de verre moderne */
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 30px;
-            width: 400px;
-            text-align: center;
-            box-shadow: 0 0 40px rgba(0, 123, 255, 0.2);
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            z-index: 10;
         }
 
-        h1 {
+        .logo {
+            text-align: center;
             font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
-            letter-spacing: 5px;
-            margin-bottom: 10px;
-            background: linear-gradient(to bottom, #fff, #5cabff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: 3px;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(92, 171, 255, 0.5);
         }
 
-        p { color: #8a99af; font-size: 0.9rem; margin-bottom: 30px; }
+        /* Onglets */
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 0.75rem;
+            padding: 5px;
+        }
 
-        /* --- Saisie de l'ID --- */
-        input {
-            width: 90%;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid #34495e;
-            border-radius: 10px;
-            color: #5cabff;
-            font-size: 1rem;
-            text-align: center;
-            outline: none;
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 0.5rem;
             transition: 0.3s;
-            margin-bottom: 20px;
         }
 
-        input:focus {
-            border-color: #5cabff;
-            box-shadow: 0 0 15px rgba(92, 171, 255, 0.4);
+        .tab-btn.active {
+            color: white;
+            background: var(--primary);
+            box-shadow: 0 4px 15px rgba(92, 171, 255, 0.3);
         }
 
-        /* --- Bouton Pulsar --- */
+        /* Formulaire */
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 0.6rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.8);
+            color: white;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(92, 171, 255, 0.2); }
+
         button {
             width: 100%;
-            padding: 15px;
-            background: #007bff;
+            padding: 0.9rem;
+            border-radius: 0.6rem;
             border: none;
-            border-radius: 10px;
-            color: white;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: bold;
+            background: var(--primary);
+            color: #000;
+            font-weight: 800;
             cursor: pointer;
+            text-transform: uppercase;
             transition: 0.3s;
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
         }
 
-        button:hover {
-            background: #0056b3;
-            transform: scale(1.02);
-        }
+        button:hover { background: white; transform: translateY(-2px); }
 
-        /* --- Zone QR Code --- */
-        #qr-container {
-            margin-top: 30px;
+        .qr-section {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: white; /* Fond blanc pour que le QR code soit scannable */
+            border-radius: 1rem;
             display: none;
-            animation: slideUp 0.8s ease-out;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        #qr-image { width: 100%; max-width: 180px; }
+
+        .message { margin-top: 1.5rem; font-size: 0.9rem; text-align: center; font-weight: 500; }
+        .error { color: var(--error); }
+        .success { color: var(--success); }
+        .hidden { display: none; }
+
+        :focus {
+    outline: none;
         }
 
-        #qr-image {
-            background: #fff;
-            padding: 10px;
-            border-radius: 15px;
-            box-shadow: 0 0 30px rgba(92, 171, 255, 0.8);
-            width: 200px;
+        /* Style de focus Master : un anneau bleu néon avec un décalage */
+        *:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: 4px;
+            box-shadow: 0 0 15px var(--primary), 0 0 5px rgba(255, 255, 255, 0.5);
+            transition: outline-offset 0.1s ease-in-out;
         }
 
-        .error { color: #ff4757; margin-top: 15px; font-weight: bold; }
-
+        /* Pour les boutons, on ajoute un effet d'échelle au focus */
+        button:focus-visible {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
 
-<div class="space-bg"></div>
 <div class="planet"></div>
 
-<div class="container">
-    <h1>COFRAP</h1>
-    <p>Système de génération d'identifiants automatique.</p>
+<div class="card">
+    <div class="logo">PULSAR</div>
     
-    <input type="text" id="usernameInput" placeholder="Saisissez votre nom d'utilisateur">
-    <button id="btnGenerate">Générer mon compte</button>
-
-    <div id="error-message" class="error"></div>
-
-    <div id="qr-container">
-        <h3>Votre accès généré :</h3>
-        <img id="qr-image" src="" alt="QR Code">
-        <p style="margin-top: 15px; color: #5cabff;">Scannez le code pour récupérer vos identifiants.</p>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('register')" accesskey="i">
+    <u>I</u>nscription
+        </button>
+        <button class="tab-btn" onclick="switchTab('login')" accesskey="c">
+            <u>C</u>onnexion
+        </button>
     </div>
+
+    <div id="register-view">
+        <div class="form-group">
+            <label>Identifiant Pulsar</label>
+            <input type="text" id="reg-username" placeholder="Entrez votre nom...">
+        </div>
+        <button id="btn-create" accesskey="g"><u>G</u>énérer mon compte</button>
+        <button id="btn-login" accesskey="g">Vérifier l'identité (<u>G</u>)</button>
+
+        <button id="btn-next-2fa" class="hidden" style="background: var(--success); color: white;">Activer Sécurité 2FA</button>
+    </div>
+
+    <div id="login-view" class="hidden">
+        <div class="form-group">
+            <label>Utilisateur</label>
+            <input type="text" id="login-username">
+        </div>
+        <div class="form-group">
+            <label>Sésame (24 caractères)</label>
+            <input type="password" id="login-password">
+        </div>
+        <div class="form-group">
+            <label>Code Authenticator</label>
+            <input type="text" id="login-otp" placeholder="......">
+        </div>
+        <button id="btn-login">Vérifier Identité</button>
+    </div>
+
+    <div id="qr-section" class="qr-section">
+        <p id="qr-instruction" style="color: black; font-size: 0.75rem; margin-bottom: 10px; font-weight: bold;"></p>
+        <img id="qr-image" src="" alt="QR Code">
+    </div>
+
+    <div id="api-message" class="message" aria-live="polite" aria-atomic="true"></div>
 </div>
+ <script>
+    const apiBase = "http://localhost:8080/function/generate-password";
 
-<script>
-    document.getElementById('btnGenerate').addEventListener('click', async () => {
-        const username = document.getElementById('usernameInput').value;
-        const errorDiv = document.getElementById('error-message');
-        const qrContainer = document.getElementById('qr-container');
-        const qrImage = document.getElementById('qr-image');
+    function switchTab(tab) {
+        document.getElementById('register-view').classList.toggle('hidden', tab !== 'register');
+        document.getElementById('login-view').classList.toggle('hidden', tab !== 'login');
+        
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons[0].classList.toggle('active', tab === 'register');
+        buttons[1].classList.toggle('active', tab === 'login');
+        
+        document.getElementById('qr-section').style.display = 'none';
+        document.getElementById('api-message').innerText = '';
+    }
 
-        if (!username) {
-            errorDiv.innerText = "Le nom d'utilisateur est obligatoire.";
-            return;
-        }
-        errorDiv.innerText = "";
+    // --- LOGIQUE US1 & US2 (Inscription) ---
+    document.getElementById('btn-create').addEventListener('click', async () => {
+        const username = document.getElementById('reg-username').value;
+        const msg = document.getElementById('api-message');
+        if(!username) { msg.innerText = "Nom requis"; return; }
 
         try {
-            // Remplace par l'URL de ton Codespace ou de ta Gateway OpenFaaS
-            const response = await fetch('http://localhost:8080/function/generate-password', {
+            const res = await fetch(apiBase, {
                 method: 'POST',
-                body: JSON.stringify({ username: username }),
+                body: JSON.stringify({ action: "create_account", username }),
                 headers: { 'Content-Type': 'application/json' }
             });
+            const data = await res.json();
+            if (data.status === "success") {
+                displayQR(data.qr_code, "ÉTAPE 1 : RÉCUPÉREZ VOTRE MOT DE PASSE");
+                document.getElementById('btn-create').classList.add('hidden');
+                document.getElementById('btn-next-2fa').classList.remove('hidden');
+            } else {
+                msg.className = "message error";
+                msg.innerText = data.message;
+            }
+        } catch (e) { msg.innerText = "Serveur hors ligne"; }
+    });
 
-            const data = await response.json();
+    document.getElementById('btn-next-2fa').addEventListener('click', async () => {
+        const username = document.getElementById('reg-username').value;
+        try {
+            const res = await fetch(apiBase, {
+                method: 'POST',
+                body: JSON.stringify({ action: "setup_2fa", username }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await res.json();
+            displayQR(data.qr_code, "ÉTAPE 2 : SCANNEZ POUR VOTRE APP MOBILE");
+            document.getElementById('btn-next-2fa').innerText = "2FA CONFIGURÉE";
+            document.getElementById('btn-next-2fa').disabled = true;
+        } catch (e) { console.error(e); }
+    });
+
+    // --- LOGIQUE US3 (Connexion) & US4 (Renouvellement) ---
+    document.getElementById('btn-login').addEventListener('click', async () => {
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        const otp = document.getElementById('login-otp').value;
+        const msg = document.getElementById('api-message');
+
+        try {
+            const res = await fetch(apiBase, {
+                method: 'POST',
+                body: JSON.stringify({ action: "authenticate", username, password, otp }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await res.json();
 
             if (data.status === "success") {
-                qrImage.src = "data:image/png;base64," + data.qr_code;
-                qrContainer.style.display = "block";
-            } else {
-                errorDiv.innerText = "Erreur système : " + data.message;
+                msg.className = "message success";
+                msg.innerText = "✓ ACCÈS AUTORISÉ : Bienvenue " + username;
+            } 
+            else if (data.status === "expired") {
+                msg.className = "message error";
+                msg.innerText = "⚠ SÉCURITÉ : Identifiants expirés. Renouvellement forcé en cours...";
+                // Appeler l'US4 après un court délai
+                setTimeout(() => handleRenew(username), 2000);
+            } 
+            else {
+                msg.className = "message error";
+                msg.innerText = "✗ " + data.message;
             }
-        } catch (err) {
-            errorDiv.innerText = "Liaison avec le serveur COFRAP impossible.";
-        }
+        } catch (e) { msg.innerText = "Erreur système"; }
     });
+
+    // FONCTION US4 : Renouvellement
+    async function handleRenew(username) {
+        const msg = document.getElementById('api-message');
+        const qrSection = document.getElementById('qr-section');
+        
+        try {
+            const res = await fetch(apiBase, {
+                method: 'POST',
+                body: JSON.stringify({ action: "renew", username }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await res.json();
+
+            if (data.status === "success") {
+                // Pour l'US4, on affiche les deux QR Codes l'un après l'autre ou côte à côte
+                // Ici, on va les afficher dans la section QR existante proprement
+                qrSection.innerHTML = `
+                    <p style="color:black; font-weight:bold; font-size:0.7rem;">NOUVEAUX ACCÈS GÉNÉRÉS</p>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+                        <div>
+                            <span style="color:black; font-size:0.6rem;">1. NOUVEAU MOT DE PASSE</span><br>
+                            <img src="data:image/png;base64,${data.qr_password}" style="width:130px; border:2px solid #5cabff;">
+                        </div>
+                        <div>
+                            <span style="color:black; font-size:0.6rem;">2. NOUVELLE 2FA</span><br>
+                            <img src="data:image/png;base64,${data.qr_2fa}" style="width:130px; border:2px solid #22c55e;">
+                        </div>
+                    </div>
+                    <button onclick="location.reload()" style="margin-top:10px; font-size:0.7rem; background:#000; color:#fff;">J'AI TOUT SCANNÉ</button>
+                `;
+                qrSection.style.display = 'block';
+                msg.innerText = "Veuillez mettre à jour vos coffres-forts et votre application MFA.";
+            }
+        } catch (e) { msg.innerText = "Erreur lors du renouvellement."; }
+    }
+
+    // Utilitaire affichage QR simple
+    function displayQR(base64, text) {
+        const qrImg = document.getElementById('qr-image');
+        const qrInst = document.getElementById('qr-instruction');
+        const qrSection = document.getElementById('qr-section');
+        
+        qrImg.src = "data:image/png;base64," + base64;
+        qrInst.innerText = text;
+        qrSection.style.display = 'block';
+    }
 </script>
+
 
 </body>
 </html>
