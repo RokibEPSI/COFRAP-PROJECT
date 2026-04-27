@@ -42,8 +42,8 @@ Le backend est ecrit en Python avec Flask. Il expose une route HTTP unique qui s
 
 Fichiers principaux :
 
-- [generate-password/app.py](/d:/EPSI/mspr2/COFRAP-PROJECT/Ali-generate-password/app.py)
-- [generate-password/handler.py](/d:/EPSI/mspr2/COFRAP-PROJECT/Ali-generate-password/handler.py)
+- [generate-password/app.py](/d:/EPSI/mspr2/COFRAP-PROJECT/generate-password/app.py)
+- [generate-password/handler.py](/d:/EPSI/mspr2/COFRAP-PROJECT/generate-password/handler.py)
 
 Le backend s'appuie sur :
 
@@ -169,7 +169,7 @@ psql -U postgres -d cofrap -f init_db.sql
 
 ### 2. Installer les dependances Python
 
-Depuis le dossier `Ali-generate-password` :
+Depuis le dossier `generate-password` :
 
 ```powershell
 pip install -r requirements.txt
@@ -186,7 +186,7 @@ $env:FERNET_KEY="QJ1pAcr4N9EqFg4uZzJCte4YbE5Z-Cez-DkUZwosLBo="
 
 ### 4. Lancer le backend
 
-Toujours depuis `Ali-generate-password` :
+Toujours depuis `generate-password` :
 
 ```powershell
 python app.py
@@ -258,7 +258,7 @@ Puis ouvrir :
 
 ```text
 COFRAP-PROJECT/
-├── Ali-generate-password/
+├── generate-password/
 │   ├── app.py
 │   ├── handler.py
 │   ├── requirements.txt

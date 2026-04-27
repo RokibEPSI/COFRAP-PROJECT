@@ -24,7 +24,7 @@ services:
   # --- Backend Python (générateur de mot de passe) ---
   backend:
     build:
-      context: ./Ali-generate-password
+      context: ./generate-password
       dockerfile: Dockerfile
     container_name: cofrap_backend
     environment:
