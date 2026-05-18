@@ -11,7 +11,7 @@ import qrcode
 import pyotp
 from cryptography.fernet import Fernet
 
-# Configuration
+#  Validation de base pour les usernames (3-30 chars, alphanum + _-) constante  pour  eviter  Les  
 USERNAME_PATTERN = re.compile(r'^[A-Za-z0-9_-]{3,30}$')
 
 def get_db_connection():
@@ -79,7 +79,7 @@ def handle_us2_generate_2fa(username):
         "message": "2FA configurée."
     }, 200
 
-# --- LOGIQUE US3 (AUTHENTIFICATION) ---
+# --- LOGIQUE US3 (AUTHENTIFICATION) ---    
 def handle_us3_authenticate(username, provided_password, provided_otp):
     try:
         conn = get_db_connection()

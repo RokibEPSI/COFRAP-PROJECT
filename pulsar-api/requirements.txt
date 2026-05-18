@@ -1,0 +1,5 @@
+cryptography
+qrcode[pil]
+psycopg2-binary
+pyotp
+flask

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pulsar-api
+  namespace: openfaas-fn
+  labels:
+    faas_function: pulsar-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      faas_function: pulsar-api
+  template:
+    metadata:
+      labels:
+        faas_function: pulsar-api
+    spec:
+      containers:
+      - name: pulsar-api
+        image: sikir/pulsar-api:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: POSTGRES_URL
+          value: "dbname=cofrap user=postgres password=password host=postgres-service.default.svc.cluster.local port=5432"
+        volumeMounts:
+        - name: fernet-key-volume
+          mountPath: /var/openfaas/secrets/fernet-key
+          subPath: fernet-key
+      volumes:
+      - name: fernet-key-volume
+        secret:
+          secretName: fernet-key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pulsar-api
+  namespace: openfaas-fn
+  labels:
+    faas_function: pulsar-api
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    faas_function: pulsar-api

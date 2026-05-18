@@ -1,0 +1,13 @@
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:50537
+
+functions:
+  pulsar-api:
+    lang: Dockerfile
+    handler: ./pulsar-api
+    image: sikir/pulsar-api:latest
+    environment:
+      POSTGRES_URL: "dbname=cofrap user=postgres password=password host=postgres-service.default.svc.cluster.local port=5432"
+    secrets:
+      - fernet-key

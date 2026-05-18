@@ -152,8 +152,7 @@ Le backend utilise principalement deux variables :
 
 Valeurs actuellement configurees dans Docker Compose :
 
-- `POSTGRES_URL=dbname=cofrap user=postgres password=password host=db port=5432`
-- `FERNET_KEY=<cle fernet>`
+
 
 En dehors d'un contexte de demonstration, ces valeurs ne doivent pas etre versionnees en clair.
 
@@ -177,12 +176,7 @@ pip install -r requirements.txt
 
 ### 3. Definir les variables d'environnement
 
-Exemple PowerShell :
 
-```powershell
-$env:POSTGRES_URL="dbname=cofrap user=postgres password=password host=localhost port=5432"
-$env:FERNET_KEY="QJ1pAcr4N9EqFg4uZzJCte4YbE5Z-Cez-DkUZwosLBo="
-```
 
 ### 4. Lancer le backend
 
